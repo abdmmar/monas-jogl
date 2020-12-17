@@ -21,3 +21,15 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+#dist folder
+dist/*
+dist-windows-i586/*
+dist-linux-amd64/*
+dist-linux-i586/*
+dist-macosx-ppc/*
+dist-macosx-universal/*
+dist-solaris-i586/*
+dist-solaris-sparc/*
+dist-solaris-sparcv9/*
+dist-windows-amd64/*
