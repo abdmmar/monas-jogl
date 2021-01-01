@@ -2,6 +2,17 @@ package com.abdmmar;
 
 import com.sun.opengl.util.Animator;
 import java.awt.Frame;
+import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.VK_A;
+import static java.awt.event.KeyEvent.VK_DOWN;
+import static java.awt.event.KeyEvent.VK_L;
+import static java.awt.event.KeyEvent.VK_LEFT;
+import static java.awt.event.KeyEvent.VK_RIGHT;
+import static java.awt.event.KeyEvent.VK_S;
+import static java.awt.event.KeyEvent.VK_SHIFT;
+import static java.awt.event.KeyEvent.VK_UP;
+import static java.awt.event.KeyEvent.VK_W;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.media.opengl.GL;
@@ -10,12 +21,20 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
-public class MonasIn3D implements GLEventListener {
-    private float rotate = 0.0f;
+public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener {
+    private static float angleX = 0.0f; // rotational angle for x-axis in degree
+    private static float angleY = 0.0f; // rotational angle for y-axis in degree
+    private static float angleZ = 0.0f;
+    private static float rotateSpeedX = 0.0f; // rotational speed for x-axis
+    private static float rotateSpeedY = 0.0f; // rotational speed for y-axis
+    private static float rotateSpeedZ = 0.0f; // rotational speed for y-axis
+    private static float rotateSpeedXIncrement = 0.05f; // adjusting x rotational speed
+    private static float rotateSpeedYIncrement = 0.05f; // adjusting y rotational speed
+    private static float rotateSpeedZIncrement = 0.05f; // adjusting y rotational speed
 
     public static void main(String[] args) {
         Frame frame = new Frame("Monas 3D");
-        GLCanvas canvas = new GLCanvas();
+        GLCanvas canvas = new MonasIn3D();
 
         canvas.addGLEventListener(new MonasIn3D());
         frame.add(canvas);
@@ -41,6 +60,14 @@ public class MonasIn3D implements GLEventListener {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         animator.start();
+    }
+
+    public MonasIn3D() {
+        this.addGLEventListener(this);
+        // For handling KeyEvents
+        this.addKeyListener(this);
+        this.setFocusable(true);
+        this.requestFocus();
     }
 
     public void init(GLAutoDrawable drawable) {
@@ -95,7 +122,9 @@ public class MonasIn3D implements GLEventListener {
 
         // Move the "drawing cursor" around
         gl.glTranslatef( 0f, 0f, -5.0f );
-        gl.glRotatef( rotate, 0.0f, 1.0f, 0.0f );  
+        gl.glRotatef( angleX, 1.0f, 0.0f, 0.0f );  
+        gl.glRotatef( angleY, 0.0f, 1.0f, 0.0f );  
+        gl.glRotatef( angleZ, 0.0f, 0.0f, 1.0f );  
         gl.glBegin( GL.GL_QUADS );
         
         base(gl);
@@ -111,15 +140,15 @@ public class MonasIn3D implements GLEventListener {
         goldBase(gl);
         gold(gl);
         
-        rotate+=0.5f;
         
         gl.glEnd();
+        
+        angleX += rotateSpeedX;
+        angleY += rotateSpeedY;
+        angleZ += rotateSpeedZ;
 
         // Flush all drawing operations to the graphics card
         gl.glFlush();
-    }
-
-    public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
     }
     
     public void orangeColor(GL gl) {
@@ -307,7 +336,7 @@ public class MonasIn3D implements GLEventListener {
     
     private void bodyTop(GL gl) {
         // FRONT
-        creamColor(gl);
+        orangeColor(gl);
         gl.glVertex3f(-0.05f, 1f, 0.05f);  
         gl.glVertex3f(0.05f, 1f, 0.05f);  
         gl.glVertex3f(0.1f, 1.03f, 0.1f);   
@@ -384,41 +413,41 @@ public class MonasIn3D implements GLEventListener {
     public void base(GL gl){
         //BASE
         // FRONT
-        whiteColor(gl);
+        orangeColor(gl);
         gl.glVertex3f(-0.2f, -1.0f, 0.2f);  
         gl.glVertex3f(0.2f, -1.0f, 0.2f);  
         gl.glVertex3f(0.4f, -0.8f, 0.4f);   
         gl.glVertex3f(-0.4f, -0.8f, 0.4f);  
         
         // BACK
-        whiteColor(gl);
+        orangeColor(gl);
         gl.glVertex3f(-0.2f, -1.0f, -0.2f);  
         gl.glVertex3f(0.2f, -1.0f, -0.2f);  
         gl.glVertex3f(0.4f, -0.8f, -0.4f);   
         gl.glVertex3f(-0.4f, -0.8f, -0.4f);  
         
         // TOP
-        whiteColor(gl);
+        orangeColor(gl);
         gl.glVertex3f(-0.4f, -0.8f, -0.4f);
         gl.glVertex3f(-0.4f, -0.8f, 0.4f);
         gl.glVertex3f(0.4f, -0.8f, 0.4f);
         gl.glVertex3f(0.4f, -0.8f, -0.4f);
         
-        whiteColor(gl);
+        orangeColor(gl);
         gl.glVertex3f(-0.2f, -1.0f, -0.2f);
         gl.glVertex3f(0.2f, -1.0f, -0.2f);
         gl.glVertex3f(0.2f, -1.0f, 0.2f);
         gl.glVertex3f(-0.2f, -1.0f, 0.2f);
         
         // RIGHT
-        whiteColor(gl);
+        orangeColor(gl);
         gl.glVertex3f(0.2f, -1.0f, -0.2f);
         gl.glVertex3f(0.2f, -1.0f, 0.2f);
         gl.glVertex3f(0.4f, -0.8f, 0.4f);
         gl.glVertex3f(0.4f, -0.8f, -0.4f);
         
         // LEFT
-        whiteColor(gl);
+        orangeColor(gl);
         gl.glVertex3f(-0.2f, -1.0f, 0.2f);
         gl.glVertex3f(-0.2f, -1.0f, -0.2f);
         gl.glVertex3f(-0.4f, -0.8f, -0.4f);
@@ -502,6 +531,48 @@ public class MonasIn3D implements GLEventListener {
         gl.glVertex3f(-0.4f, -0.7f, 0.4f);
         gl.glVertex3f(0.4f, -0.7f, 0.4f);
         
+    }
+    
+    @Override
+    public void keyPressed(KeyEvent ke) {
+        int keyCode = ke.getKeyCode();
+        switch (keyCode) {
+            case VK_UP:   // decrease rotational speed in x
+                rotateSpeedX -= rotateSpeedXIncrement;
+                break;
+            case VK_DOWN: // increase rotational speed in x
+                rotateSpeedX += rotateSpeedXIncrement;
+                break;
+            case VK_LEFT:  // decrease rotational speed in y
+                rotateSpeedY -= rotateSpeedYIncrement;
+                break;
+            case VK_RIGHT: // increase rotational speed in y
+                rotateSpeedY += rotateSpeedYIncrement;
+                break;
+            case VK_W:
+                rotateSpeedZ -= rotateSpeedZIncrement;
+                break;
+            case VK_S:
+                rotateSpeedZ += rotateSpeedZIncrement;
+                break;
+            case VK_SHIFT : // increase rotational speed in y
+                rotateSpeedY = 0;
+                rotateSpeedX = 0;
+                rotateSpeedZ = 0;
+                break;
+
+        }
+    }
+    
+    @Override
+    public void keyTyped(KeyEvent ke) {
+    }
+    
+    @Override
+    public void keyReleased(KeyEvent ke) {
+    }
+    
+    public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
     }
 }
 
