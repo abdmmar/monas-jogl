@@ -31,6 +31,7 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
     private static float rotateSpeedXIncrement = 0.05f; // adjusting x rotational speed
     private static float rotateSpeedYIncrement = 0.05f; // adjusting y rotational speed
     private static float rotateSpeedZIncrement = 0.05f; // adjusting y rotational speed
+    private static boolean isLightOn;
 
     public static void main(String[] args) {
         Frame frame = new Frame("Monas 3D");
@@ -81,8 +82,23 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.setSwapInterval(1);
 
         // Setup the drawing area and shading mode
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
         gl.glShadeModel(GL.GL_SMOOTH); // try setting this to GL_FLAT and see what happens.
+        
+        gl.glEnable( GL.GL_LIGHTING );
+        gl.glEnable( GL.GL_LIGHT0 );
+        gl.glEnable( GL.GL_NORMALIZE ); 
+        
+        float[] lightAmbientValue = {0.5f, 0.5f, 0.5f, 0.0f};
+        float[] lightDiffuseValue = {0.5f, 0.5f, 0.5f, 0.5f};
+        float lightDiffusePosition[] = {0.0f, 0.0f, 2.0f, 1.0f};
+        float color1[] = {0f, 0f, 0f, 0.5f};
+
+        gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, lightAmbientValue, 0);
+        gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, lightDiffuseValue, 0);
+        gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, color1 , 1); 
+        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightDiffusePosition, 0);
+        gl.glEnable(GL.GL_LIGHT1);
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
@@ -124,7 +140,14 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glTranslatef( 0f, 0f, -5.0f );
         gl.glRotatef( angleX, 1.0f, 0.0f, 0.0f );  
         gl.glRotatef( angleY, 0.0f, 1.0f, 0.0f );  
-        gl.glRotatef( angleZ, 0.0f, 0.0f, 1.0f );  
+        gl.glRotatef( angleZ, 0.0f, 0.0f, 1.0f );
+        
+        if (isLightOn) {
+            gl.glEnable(GL.GL_LIGHTING);
+        } else {
+            gl.glDisable(GL.GL_LIGHTING);
+        }
+        
         gl.glBegin( GL.GL_QUADS );
         
         base(gl);
@@ -144,7 +167,7 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glEnd();
         
         angleX += rotateSpeedX;
-        angleY += rotateSpeedY;
+        angleY += rotateSpeedY + 0.2;
         angleZ += rotateSpeedZ;
 
         // Flush all drawing operations to the graphics card
@@ -152,7 +175,6 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
     }
     
     public void orangeColor(GL gl) {
-        //BACK
         gl.glColor3f(1.f, 0.8f, 0.0f); // orange
     }
     
@@ -202,7 +224,7 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glVertex3f(0.0f, 1.35f, 0.0f);   
         gl.glVertex3f(0.0f, 1.35f, 0.0f);  
         
-        orangeColor(gl);
+        //BACK
         gl.glVertex3f(-0.04f, 1.2f, -0.04f);  
         gl.glVertex3f(0.04f, 1.2f, -0.04f);  
         gl.glVertex3f(0.03f, 1.12f, -0.03f);   
@@ -214,7 +236,6 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glVertex3f(0.0f, 1.35f, -0.0f);  
         
         //RIGHT
-        orangeColor(gl);
         gl.glVertex3f(0.04f, 1.2f, -0.04f);  
         gl.glVertex3f(0.04f, 1.2f, 0.04f);  
         gl.glVertex3f(0.03f, 1.12f, 0.03f);   
@@ -226,7 +247,6 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glVertex3f(0.0f, 1.35f, -0.0f);  
         
         //LEFT
-        orangeColor(gl);
         gl.glVertex3f(-0.04f, 1.2f, -0.04f);  
         gl.glVertex3f(-0.04f, 1.2f, 0.04f);  
         gl.glVertex3f(-0.03f, 1.12f, 0.03f);   
@@ -235,8 +255,7 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glVertex3f(-0.04f, 1.2f, -0.04f);  
         gl.glVertex3f(-0.04f, 1.2f, 0.04f);  
         gl.glVertex3f(-0.0f, 1.35f, 0.0f);   
-        gl.glVertex3f(-0.0f, 1.35f, -0.0f);  
-
+        gl.glVertex3f(-0.0f, 1.35f, -0.0f);
     }
     
     public void goldBase(GL gl){
@@ -244,35 +263,27 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glVertex3f(-0.1f, 1.1f, 0.05f);  
         gl.glVertex3f(0.1f, 1.1f, 0.05f);  
         gl.glVertex3f(0.12f, 1.12f, 0.08f);   
-        gl.glVertex3f(-0.12f, 1.12f, 0.08f);  
+        gl.glVertex3f(-0.12f, 1.12f, 0.08f);
         
-        //BACK
-        whiteColor(gl);
         gl.glVertex3f(-0.1f, 1.1f, -0.05f);  
         gl.glVertex3f(0.1f, 1.1f, -0.05f);  
         gl.glVertex3f(0.12f, 1.12f, -0.08f);   
-        gl.glVertex3f(-0.12f, 1.12f, -0.08f);  
+        gl.glVertex3f(-0.12f, 1.12f, -0.08f);
         
-        whiteColor(gl);
         gl.glVertex3f(0.1f, 1.1f, -0.05f);  
         gl.glVertex3f(0.1f, 1.1f, 0.05f);  
         gl.glVertex3f(0.12f, 1.12f, 0.08f);   
-        gl.glVertex3f(0.12f, 1.12f, -0.08f);  
+        gl.glVertex3f(0.12f, 1.12f, -0.08f);
         
-        whiteColor(gl);
         gl.glVertex3f(-0.1f, 1.1f, -0.05f);  
         gl.glVertex3f(-0.1f, 1.1f, 0.05f);  
         gl.glVertex3f(-0.12f, 1.12f, 0.08f);   
         gl.glVertex3f(-0.12f, 1.12f, -0.08f);  
         
-        //TOP
-        whiteColor(gl);
         gl.glVertex3f(-0.12f, 1.12f, -0.08f);  
         gl.glVertex3f(-0.12f, 1.12f, 0.08f);  
         gl.glVertex3f(0.12f, 1.12f, 0.08f);   
-        gl.glVertex3f(0.12f, 1.12f, -0.08f);  
-        
-        
+        gl.glVertex3f(0.12f, 1.12f, -0.08f);
     }
     
     public void headTop(GL gl){
@@ -284,26 +295,22 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glVertex3f(0.1f, 1.1f, 0.05f);  
         
         //BACK
-        creamColor(gl);
         gl.glVertex3f(0.12f, 1.05f, -0.12f);   
         gl.glVertex3f(-0.12f, 1.05f, -0.12f);  
         gl.glVertex3f(-0.1f, 1.1f, -0.05f);  
         gl.glVertex3f(0.1f, 1.1f, -0.05f);  
         
         //RIGHT
-        creamColor(gl);
         gl.glVertex3f(0.12f, 1.05f, -0.12f);   
         gl.glVertex3f(0.12f, 1.05f, 0.12f);  
         gl.glVertex3f(0.1f, 1.1f, 0.05f);  
         gl.glVertex3f(0.1f, 1.1f, -0.05f);  
         
         //LEFT
-        creamColor(gl);
         gl.glVertex3f(-0.12f, 1.05f, -0.12f);   
         gl.glVertex3f(-0.12f, 1.05f, 0.12f);  
         gl.glVertex3f(-0.1f, 1.1f, 0.05f);  
-        gl.glVertex3f(-0.1f, 1.1f, -0.05f);  
-
+        gl.glVertex3f(-0.1f, 1.1f, -0.05f);
     }
     
     public void head(GL gl){
@@ -330,8 +337,7 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glVertex3f(-0.1f, 1.03f, 0.1f);  
         gl.glVertex3f(-0.1f, 1.03f, -0.1f);  
         gl.glVertex3f(-0.12f, 1.05f, -0.12f);   
-        gl.glVertex3f(-0.12f, 1.05f, 0.12f);  
-        
+        gl.glVertex3f(-0.12f, 1.05f, 0.12f);
     }
     
     private void bodyTop(GL gl) {
@@ -374,80 +380,69 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
         gl.glVertex3f(-0.05f, 1f, 0.05f);  
         
         //BACK
-        whiteColor(gl);
         gl.glVertex3f(-0.1f, -0.7f, -0.1f);  
         gl.glVertex3f(0.1f, -0.7f, -0.1f);  
         gl.glVertex3f(0.05f, 1f, -0.05f);   
         gl.glVertex3f(-0.05f, 1f, -0.05f);  
         
         //TOP
-        whiteColor(gl);
         gl.glVertex3f(-0.05f, 1f, -0.05f);  
         gl.glVertex3f(-0.05f, 1f, 0.05f);  
         gl.glVertex3f(0.05f, 1f, 0.05f);   
         gl.glVertex3f(0.05f, 1f, -0.05f);  
         
         //BOTTOM
-        whiteColor(gl);
         gl.glVertex3f(-0.1f, -0.7f, -0.1f);  
         gl.glVertex3f(0.1f, -0.7f, -0.1f);  
         gl.glVertex3f(0.1f, -0.7f, 0.1f);   
         gl.glVertex3f(-0.1f, -0.7f, 0.1f);  
         
         //RIGHT
-        whiteColor(gl);
         gl.glVertex3f(0.1f, -0.7f, -0.1f);  
         gl.glVertex3f(0.1f, -0.7f, 0.1f);  
         gl.glVertex3f(0.05f, 1f, 0.05f);   
         gl.glVertex3f(0.05f, 1f, -0.05f);  
         
         //LEFT
-        whiteColor(gl);
         gl.glVertex3f(-0.1f, -0.7f, 0.1f);  
         gl.glVertex3f(-0.1f, -0.7f, -0.1f);  
         gl.glVertex3f(-0.05f, 1f, -0.05f);   
-        gl.glVertex3f(-0.05f, 1f, 0.05f);  
-        
+        gl.glVertex3f(-0.05f, 1f, 0.05f); 
     }
     
     public void base(GL gl){
         //BASE
         // FRONT
-        orangeColor(gl);
+        whiteColor(gl);
         gl.glVertex3f(-0.2f, -1.0f, 0.2f);  
         gl.glVertex3f(0.2f, -1.0f, 0.2f);  
         gl.glVertex3f(0.4f, -0.8f, 0.4f);   
         gl.glVertex3f(-0.4f, -0.8f, 0.4f);  
         
         // BACK
-        orangeColor(gl);
         gl.glVertex3f(-0.2f, -1.0f, -0.2f);  
         gl.glVertex3f(0.2f, -1.0f, -0.2f);  
         gl.glVertex3f(0.4f, -0.8f, -0.4f);   
         gl.glVertex3f(-0.4f, -0.8f, -0.4f);  
         
         // TOP
-        orangeColor(gl);
         gl.glVertex3f(-0.4f, -0.8f, -0.4f);
         gl.glVertex3f(-0.4f, -0.8f, 0.4f);
         gl.glVertex3f(0.4f, -0.8f, 0.4f);
         gl.glVertex3f(0.4f, -0.8f, -0.4f);
         
-        orangeColor(gl);
         gl.glVertex3f(-0.2f, -1.0f, -0.2f);
         gl.glVertex3f(0.2f, -1.0f, -0.2f);
         gl.glVertex3f(0.2f, -1.0f, 0.2f);
         gl.glVertex3f(-0.2f, -1.0f, 0.2f);
         
         // RIGHT
-        orangeColor(gl);
         gl.glVertex3f(0.2f, -1.0f, -0.2f);
         gl.glVertex3f(0.2f, -1.0f, 0.2f);
         gl.glVertex3f(0.4f, -0.8f, 0.4f);
         gl.glVertex3f(0.4f, -0.8f, -0.4f);
         
         // LEFT
-        orangeColor(gl);
         gl.glVertex3f(-0.2f, -1.0f, 0.2f);
         gl.glVertex3f(-0.2f, -1.0f, -0.2f);
         gl.glVertex3f(-0.4f, -0.8f, -0.4f);
@@ -459,35 +454,30 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
     public void baseTopBottom(GL gl){
         //BASETOP BOTTOM SECTION
         //FRONT
-        creamColor(gl);
         gl.glVertex3f(0.4f, -0.8f, 0.4f);   
         gl.glVertex3f(-0.4f, -0.8f, 0.4f);
         gl.glVertex3f(-0.5f, -0.75f, 0.45f);
         gl.glVertex3f(0.5f, -0.75f, 0.45f);
         
         //BACK
-        creamColor(gl);
         gl.glVertex3f(0.4f, -0.8f, -0.4f);   
         gl.glVertex3f(-0.4f, -0.8f, -0.4f);  
         gl.glVertex3f(-0.5f, -0.75f, -0.45f);
         gl.glVertex3f(0.5f, -0.75f, -0.45f);
         
         //BOTTOM
-        creamColor(gl);
         gl.glVertex3f(-0.4f, -0.8f, -0.4f);
         gl.glVertex3f(-0.4f, -0.8f, 0.4f);
         gl.glVertex3f(0.4f, -0.8f, 0.4f);
         gl.glVertex3f(0.4f, -0.8f, -0.4f);
         
         // RIGHT
-        creamColor(gl);
         gl.glVertex3f(0.4f, -0.8f, -0.4f);
         gl.glVertex3f(0.4f, -0.8f, 0.4f);
         gl.glVertex3f(0.5f, -0.75f, 0.45f);
         gl.glVertex3f(0.5f, -0.75f, -0.45f);
         
         // LEFT
-        creamColor(gl);
         gl.glVertex3f(-0.4f, -0.8f, 0.4f);
         gl.glVertex3f(-0.4f, -0.8f, -0.4f);
         gl.glVertex3f(-0.5f, -0.75f, -0.45f);
@@ -549,13 +539,16 @@ public class MonasIn3D extends GLCanvas implements  GLEventListener, KeyListener
             case VK_RIGHT: // increase rotational speed in y
                 rotateSpeedY += rotateSpeedYIncrement;
                 break;
-            case VK_W:
+            case VK_W: // increase rotational speed in z
                 rotateSpeedZ -= rotateSpeedZIncrement;
                 break;
-            case VK_S:
+            case VK_S: // increase rotational speed in z
                 rotateSpeedZ += rotateSpeedZIncrement;
                 break;
-            case VK_SHIFT : // increase rotational speed in y
+            case VK_L:
+                isLightOn = !isLightOn;
+                break;
+            case VK_SHIFT : // stop
                 rotateSpeedY = 0;
                 rotateSpeedX = 0;
                 rotateSpeedZ = 0;
